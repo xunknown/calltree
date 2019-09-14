@@ -1,0 +1,346 @@
+. \" @(#)calltree.1	1.5 04/01/26 Copyright 1985-1997 J. Schilling
+. \" Manual page for calltree
+. \"
+.if t .ds a \v'-0.55m'\h'0.00n'\z.\h'0.40n'\z.\v'0.55m'\h'-0.40n'a
+.if t .ds o \v'-0.55m'\h'0.00n'\z.\h'0.45n'\z.\v'0.55m'\h'-0.45n'o
+.if t .ds u \v'-0.55m'\h'0.00n'\z.\h'0.40n'\z.\v'0.55m'\h'-0.40n'u
+.if t .ds A \v'-0.77m'\h'0.25n'\z.\h'0.45n'\z.\v'0.77m'\h'-0.70n'A
+.if t .ds O \v'-0.77m'\h'0.25n'\z.\h'0.45n'\z.\v'0.77m'\h'-0.70n'O
+.if t .ds U \v'-0.77m'\h'0.30n'\z.\h'0.45n'\z.\v'0.77m'\h'-.75n'U
+.if t .ds s \(*b
+.if t .ds S SS
+.if n .ds a ae
+.if n .ds o oe
+.if n .ds u ue
+.if n .ds s sz
+.TH CALLTREE 1 "04/01/26" "J\*org Schilling" "Schily\'s USER COMMANDS"
+.SH NAME
+calltree \- static call tree generator for C programs
+.SH SYNOPSIS
+.B
+calltree
+[
+.I calltree_options
+] [
+.I cpp_options
+]
+.B file1\|.\|.\|.\|filen
+.SH DESCRIPTION
+The 
+.B calltree 
+command parses a collection of input files (assuming C syntax) and 
+builds a graph that represents the static call structure of these files.
+.PP
+.B Calltree
+is similar to
+.BR cflow (1)
+but unlike 
+.BR cflow (1),
+.B calltree
+is not based on 
+.BR lint (1).
+.B Calltree 
+implements some more functions than 
+.BR cflow (1),
+but does not list the return types of the functions. This is because
+.B calltree
+includes an own C parser and thus may be used even on systems that don't have
+.BR lint (1).
+The disadvantage is that the C parser that is used by 
+.B calltree
+is not completely correct and may not find all calls of a function. 
+This is mainly true for calls that are done via function pointers.
+.PP
+.B Calltree
+is able to detect recursive function calls (e.g. functions that call themselves).
+Recursive function calls are marked with an ellipsis in the output.
+.SH OPTIONS
+.TP
+.B \-b
+Prints a vertical bar at the beginning of each indentation level to make
+the output easier to read.
+See the
+.B \-s
+options for using different indentation.
+.TP
+.B \-r
+Reverse the 
+.I caller:callee
+relation resulting in an invert structure of the tree. 
+Each function is followed by a list of functions that
+directly call that function.
+.TP
+.B \-f
+Create a flattened call graph. 
+The listing for a specific function includes all functions that 
+either get called directly or indirectly from within this function.
+The output differs from the output that is created if the 
+nesting depth has been limited to one; the latter case only
+lists functions that are called directly from the function.
+.TP
+.B \-g
+Each function name is followed by the file-name, where
+the function is implemented.
+The file-name followed by the line number of the definition
+and is printed in square brackets.
+.TP
+.BI ignorefile= "file, " i= file
+Causes all function names found in
+.I file
+to be ignored for the creation of the call graph.
+The file must contain each function name on a separate line.
+This option may be used to remove calls to standard libraries
+from the output. There may be more than one
+.BI ignorefile= file
+option. The call graph in this case ignores the sum of all
+names found in all files.
+.TP
+.BI depth= "#, " d= #
+Limit the nesting depth of the shown call graph. By default this
+number is very large, resulting in a complete call graph.
+If the number set to a smaller value, the call graph is cut off
+at the appropriate nesting depth.
+Attempts to set this number to a non positive value are ignored.
+.TP
+.BI s= #
+Sets the indentation value to
+.I #
+(a number). The default is four. 
+If the nesting depth of a project is very high, it may be a good idea to
+make the indentation smaller to prevent line overflows.
+If this number is set to zero, the resulting call graph will be completely flat.
+.TP
+.B \-m
+Produces the call graph only for 
+.BR main .
+The default is to print separate call graphs for each function.
+.TP
+.B \-p
+If the 
+.B \-p 
+option is present, the C preprocessor will be invoked for
+each source file. The output of the C preprocessor
+is then feed into the parser of the
+.B calltree
+program.
+Calling the C preprocessor the default.
+.TP
+.B \-np
+Don't invoke the C preprocessor. This is more easy to 
+use as you don't need to supply the appropriate C preprocessor
+flags, but may cause incorrect output.
+.TP
+.BI list= "function, " lf= function
+Produce a call graph only for the named 
+.IR function .
+By default, a call graph for all functions is printed.
+Using the
+.B \-m 
+option is the same as using
+.BR list= main.
+If you specify 
+.B list=
+and 
+.B \-m
+at the same time, 
+.B \-m 
+is ignored.
+.TP
+.BI listfile= "file, "l= file
+Produces a call graph for every function found in
+.I file.
+The file must contain one function name on each line.
+This option can be used to examine the
+.B interface
+of a
+.B module
+of an unknown source. In this case
+.I file
+may be the result of a previous run of
+.B calltree
+using the
+.B \-e
+or
+.B \-x
+option.
+This option is implemented as the
+general case of the
+.BI list= function
+option, only one of both options makes sense.
+.TP
+.B \-xvcg
+Produce output suitable for
+.BR xvcg .
+Xvcg may be found at
+.I http://www.cs.uni-sb.de/RW/users/sander/html/gsvcg1.html
+and is a graph visualization tool. It allows you create graphical
+output from
+.BR calltree .
+Thanks to Scott Anderson <scott_anderson@mvista.com> for the hint.
+.TP
+.B \-dot
+Produce output suitable for
+.BR graphviz .
+Graphviz may be found at
+.I http://www.research.att.com/sw/tools/graphviz/
+and is a graph visualization tool. It allows you create graphical
+output from
+.BR calltree .
+Thanks to Pietro Abate <abate@students.cs.unibo.it> for the hint.
+.TP
+.B \-u
+Lists all functions that are not called via main.
+If the list of source files is complete for a project, this should list all functions
+that are apparently unused.
+The
+.B \-u
+option includes the
+.B \-f
+option by default.
+.TP
+.B \-e
+Lists all functions not called at all.
+This output produced with this option is usually smaller than
+the output produced with
+.BR \-u .
+This is caused by the fact that the source may still contain functions that
+are called by other functions but not via main.
+The
+.B \-e
+option includes the
+.B \-f
+option by default.
+.TP
+.B \-x
+Lists all functions that seem to be external.
+A function is detected to be 
+.B external 
+if it is not defined in the list of specified source files.
+The
+.B \-x
+option includes the
+.B \-e
+option and the
+.B \-r
+option by default.
+.TP
+.B \-help
+Prints a short summary of the 
+.B calltree
+options and exists.
+.TP
+.B \-version
+Prints the 
+.B calltree
+version number string and exists.
+.TP
+
+.SH "SUPPORTED CPP OPTIONS
+.TP
+.BI \-I include-dir
+Adds 
+.I include-dir
+to the search list of the C preprocessor.
+.TP
+.BI \-D definition
+Adds
+.I definition
+to the list of known predefined C preprocessor macros.
+.TP
+.BI \-U definition
+Removes
+.I definition
+from the list of known predefined C preprocessor macros.
+
+.SH EXAMPLES
+.B "calltree -x *.c > externals"
+.PP
+Lists all functions being external to the project.
+.PP
+.B "calltree -rg listfile=externals *.c"
+.PP
+Lists all functions that call external routines.
+.PP
+.B "calltree -e *.c > exports"
+.PP
+Lists all functions being not called by functions of the project.
+.PP
+.B "calltree -g listfile=exports *.c"
+.PP
+Lists the calltree for all functions that are listed in file 
+.I exports.
+
+.PP
+The C source file
+.BR file.c :
+.nf
+int  i;
+main()
+{
+	f();
+	g();
+	f();
+	r();
+}
+f()
+{
+	i = h();
+}
+r()
+{
+	r();
+}
+.fi
+.PP
+The command 
+.B calltree -gb file.c
+will produce the following output:
+.nf
+f [file.c:10]:
+|   h
+g:
+|   EXTERNAL ROUTINE
+h:
+|   EXTERNAL ROUTINE
+main [file.c:3]:
+|   f [file.c:10]
+|   |   h
+|   g
+|   r [file.c:14]
+|   |   r [file.c:14] ....
+r [file.c:14]:
+|   r [file.c:14] ....
+.fi
+
+.SH NOTES
+.PP
+As 
+.B calltree
+by default creates a separate call graph for each function, 
+the output volume may be higher than expected if the
+.B \-m
+option has not been used.
+.PP
+Function names that appear only inside a
+structure (and presumably called only through that
+structure) will not be detected as callable.
+
+.SH BUGS
+.PP
+The C parser used by 
+.B calltree
+is not implementing the complete C syntax. For this reason, 
+constructions such as:
+.RS
+.PP
+.B
+typedef mytype (*xfunc) ();
+.RE
+.PP
+may fool 
+.BR calltree .
+It appears that
+.I mytype
+is detected as a function that gets called from somewhere depending on the
+place where the typedef was found.
+

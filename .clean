@@ -1,0 +1,8 @@
+#!/bin/sh
+rm -rf */OBJ */*/OBJ libs/* incs/*
+rm -f core */core */*/core
+rm -f .EDT* */.EDT* */*/.EDT*
+rm -f .vedt* */.vedt* */*/.vedt*
+rm -f *.bak */*.bak */*/*.bak
+rm -f */tags */*/tags
+rm -f */TAGS */*/TAGS

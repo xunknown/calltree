@@ -1,0 +1,19 @@
+     calltree -	static call tree generator for C programs
+
+     The calltree command parses  a  collection	 of  input  files
+     (assuming	C  syntax) and builds a	graph that represents the
+     static call structure of these files.
+
+     Calltree  is  similar  to	cflow(1)  but  unlike	cflow(1),
+     calltree  is not based on lint(1).	 Calltree implements some
+     more functions than cflow(1), but does not	list  the  return
+     types of the functions. This is because calltree includes an
+     own C parser and thus may be used even on systems that don't
+     have lint(1).  The	disadvantage is	that the C parser that is
+     used by calltree is not completely	correct	and may	not  find
+     all  calls	of a function. This is mainly true for calls that
+     are done via function pointers.
+
+     Calltree is able to detect	recursive  function  calls  (e.g.
+     functions	that  call themselves).	 Recursive function calls
+     are marked	with an	ellipsis in the	output.

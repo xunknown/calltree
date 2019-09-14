@@ -1,0 +1,196 @@
+#!/bin/sh
+#
+# @(#)makeinc	1.3 02/12/16 Copyright 1998 J. Schilling
+###########################################################################
+# Copyright 1998 by J. Schilling
+###########################################################################
+#
+# Automake script for the Schily (SING) makefile system
+#
+###########################################################################
+#
+#	Creates the following files:
+#
+#	./RULES/os-sunos.id
+#	./RULES/os-sunos.def
+#	./DEFAULTS/Defaults.sunos
+#	./RULES/sun4c-sunos-gcc.rul
+#
+###########################################################################
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; see the file COPYING.  If not, write to the Free Software
+# Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+###########################################################################
+MAILADDR=schilling@fokus.fhg.de
+
+###########################################################################
+# Option processing
+###########################################################################
+case $1 in
+
+-r)
+	shift
+	SRCROOT=$1
+	shift
+	;;
+esac
+
+if [ $# -lt 1 ]; then
+	echo 'Usage: makeinc [-r srcroot] filename'
+fi
+
+###########################################################################
+# Find SRCROOT if not specified via option
+###########################################################################
+if [ .$SRCROOT = . -a -r RULES ]; then
+	SRCROOT=.
+fi
+if [ .$SRCROOT = . -a -r ../RULES ]; then
+	SRCROOT=..
+fi
+if [ .$SRCROOT = . -a -r ../../RULES ]; then
+	SRCROOT=../..
+fi
+if [ .$SRCROOT = . -a -r ../../../RULES ]; then
+	SRCROOT=../../..
+fi
+if [ .$SRCROOT = . -a -r ../../../../RULES ]; then
+	SRCROOT=../../../..
+fi
+if [ .$SRCROOT = . -a -r ../../../../../RULES ]; then
+	SRCROOT=../../../../..
+fi
+if [ .$SRCROOT = . -a -r ../../../../../../RULES ]; then
+	SRCROOT=../../../../../..
+fi
+
+###########################################################################
+# Real start of automake script
+###########################################################################
+echo 'NOTICE:		Automake script called'
+if [ -r $1 ]; then
+	echo "WARNING:	requested file '$1' already exists"
+	exit
+fi
+echo "IMPORTANT:	Please report your architecture to $MAILADDR"
+echo
+echo "Trying to create missing rule file '$1'"
+sleep 1
+echo
+
+CC=cc
+gcc -v 2> /dev/null && CC=gcc
+echo "CC:		$CC"
+
+MANSTYLE=sysv
+if [ -r /usr/man/*man7*/man* -o -r /usr/share/man/*man7*/man* \
+	-o -r /usr/man/*man7*/ascii* -o -r /usr/share/man/*man7*/ascii* ]; then 
+	MANSTYLE=bsd
+fi
+echo "MANSTYLE:	$MANSTYLE"
+
+	case $1 in
+
+	*os-*.id)
+		echo $1
+		OSNAME=`echo $1 | sed -e 's;\(.*\)os-\(.*\)\.id;\2;'`
+		echo '###########################################################################' > $1
+		echo "# OS specific MACRO definitions for $OSNAME"	>> $1
+		echo "# This file is auto generated and may be wrong"	>> $1
+		echo '###########################################################################' >> $1
+		echo "O_ARCH=		$OSNAME"	>> $1 
+		echo '-O_ARCH=	-$(O_ARCH)'		>> $1 
+		;;
+	
+	*os-*.def)
+		echo $1
+		OSNAME=`echo $1 | sed -e 's;\(.*\)os-\(.*\)\.def;\2;'`
+		echo '###########################################################################' > $1
+		echo "# Global os definitions for $OSNAME"		>> $1
+		echo "# This file is auto generated and may be wrong"	>> $1
+		echo '###########################################################################' >> $1
+		echo "MANSTYLE=	$MANSTYLE"		>> $1 
+		;;
+	
+	*Defaults.*)
+		echo $1
+		OSNAME=`echo $1 | sed -e 's;\(.*\)\.\(.*\);\2;'`
+		echo '###########################################################################' > $1
+		echo "# global definitions for $OSNAME Systems"		>> $1
+		echo "# This file is auto generated and may be wrong"	>> $1
+		echo '###########################################################################' >> $1
+		if [ $CC = gcc ]; then
+			cat $SRCROOT/TEMPLATES/Defaults.gcc >> $1
+		else
+			cat $SRCROOT/TEMPLATES/Defaults.xcc >> $1
+		fi
+		echo							>> $1
+		echo '###########################################################################' >> $1
+		echo "# Do compilattion with minimal warnings"		>> $1
+		echo '###########################################################################' >> $1
+		echo "CWARNOPTS="					>> $1
+		;;
+	
+	*-*-*cc.rul)
+		ARCH=`echo $1 | sed -e 's;\(.*\)/\(.*\)-\(.*\)-\(.*\).rul;\2;'`
+		OSNAME=`echo $1 | sed -e 's;\(.*\)/\(.*\)-\(.*\)-\(.*\).rul;\3;'`
+		CCOM=`echo $1 | sed -e 's;\(.*\)/\(.*\)-\(.*\)-\(.*\).rul;\4;'`
+		DIR=`echo $1 | sed -e "s;\(.*\)/$ARCH-$OSNAME-$CCOM.rul;\1;"`
+		echo "ARCH:		$ARCH"
+		echo "OSNAME:		$OSNAME"
+		echo "CCOM:		$CCOM"
+		echo "DIR:		$DIR"
+		echo $1
+		echo "Trying to find similar architecture for '$1'"
+		similar=`ls $DIR/*-$OSNAME-$CCOM.rul 2>/dev/null| head -1`
+		SARCH=`echo $similar | sed -e "s;\(.*\)/\(.*\)-$OSNAME-$CCOM.rul;\2;"`
+
+		if [ .$similar != . ]; then
+			echo 'Found similar architecture             ' "'$similar'"
+			echo 'creating symlink:' ln -s $SARCH-$OSNAME-$CCOM.rul $1
+			echo "Please send a mail to $MAILADDR to report whether this works or not"
+			sleep 10
+			ln -s $SARCH-$OSNAME-$CCOM.rul $1 || cp $SARCH-$OSNAME-$CCOM.rul $1
+			exit
+		else
+			echo '###########################################################################' > $1
+			echo "# global definitions for $OSNAME Systems"		>> $1
+			echo "# This file is auto generated and may be wrong"	>> $1
+			echo '###########################################################################' >> $1
+
+			if [ $CCOM = gcc ]; then
+				echo 'Using generic GCC machine configuration file' 
+				cat $SRCROOT/TEMPLATES/temp-gcc.rul >> $1
+			else
+				echo 'Using generic dumb cc machine configuration file' 
+				cat $SRCROOT/TEMPLATES/temp-xcc.rul >> $1
+			fi
+		fi
+		;;
+
+	#######################################################################
+	# This entry is not really needed...
+	#######################################################################
+	*TARGETS/Targetdirs*)
+		echo "Linking $1 to $SRCROOT/TARGETS/Targetdirs"
+		ln -s Targetdirs $1
+		;;
+	*)
+		echo "Unknown rule to build: '$1'."
+		exit 1
+		;;
+	
+	esac
+
+echo "Please send a mail to $MAILADDR to report whether this works or not"
+sleep 10

@@ -1,0 +1,303 @@
+dnl @(#)configure.in	1.69 03/09/13 Copyright 1998-2003 J. Schilling
+dnl Process this file with autoconf to produce a configure script.
+AC_REVISION($Revision$)dnl
+
+AC_INIT(xconfig.h.in)
+AC_CONFIG_HEADER(xconfig.h)
+AC_CANONICAL_HOST
+
+dnl Checks for programs.
+dnl CC=${CC-cc}
+dnl AC_PROG_CC
+AC_EXEEXT
+AC_PROG_CPP
+dnl AC_PROG_INSTALL
+AC_PROG_RANLIB
+AC_PROG_MAKE_SET
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_HEADER_INTTYPES
+AC_HEADER_DIRENT
+AC_HEADER_STAT
+AC_HEADER_TIME
+AC_HEADER_SYS_WAIT
+dnl check whether select() needs sys/select.h
+AC_HEADER_SYS_SELECT
+dnl check whether select() needs sys/socket.h (BeOS)
+AC_HEADER_SELECT2
+AC_CHECK_HEADERS(varargs.h stdarg.h stdlib.h stddef.h string.h strings.h unistd.h fcntl.h sys/file.h)
+AC_CHECK_HEADERS(getopt.h)
+AC_CHECK_HEADERS(limits.h)
+AC_CHECK_HEADERS(a.out.h aouthdr.h elf.h)
+AC_CHECK_HEADERS(malloc.h termios.h termio.h)
+AC_CHECK_HEADERS(pwd.h grp.h sys/acl.h acllib.h)
+AC_CHECK_HEADERS(shadow.h syslog.h)
+AC_CHECK_HEADERS(sys/time.h sys/times.h utime.h sys/utime.h sys/ioctl.h sys/filio.h sys/param.h sys/systeminfo.h)
+AC_CHECK_HEADERS(sys/syscall.h)
+AC_CHECK_HEADERS(mntent.h sys/mntent.h sys/mnttab.h sys/mount.h)
+AC_CHECK_HEADERS(wait.h sys/resource.h sys/procfs.h)
+AC_CHECK_HEADERS(sys/utsname.h sys/priocntl.h sys/rtpriocntl.h)
+AC_CHECK_HEADERS(sys/mtio.h sys/tape.h sys/mman.h linux/pg.h camlib.h)
+AC_CHECK_HEADERS(sys/shm.h sys/ipc.h)
+AC_CHECK_HEADERS(sys/dkio.h sys/dklabel.h sun/dkio.h sun/dklabel.h)
+AC_CHECK_HEADERS(sys/types.h sys/stat.h types.h stat.h)
+AC_CHECK_HEADERS(poll.h sys/poll.h sys/select.h)
+AC_CHECK_HEADERS(netdb.h sys/socket.h)
+AC_CHECK_HEADERS(ieeefp.h fp.h)
+AC_CHECK_HEADERS(values.h float.h)
+AC_CHECK_HEADERS(arpa/inet.h)
+AC_CHECK_HEADERS(bsd/dev/scsireg.h)
+dnl Check for HP-UX sys/bsdtty.h (needed for TIOCGPGRP)
+AC_CHECK_HEADERS(sys/bsdtty.h)
+dnl Check for BeOS kernel definitions (e.g. B_PAGE_SIZE)
+AC_CHECK_HEADERS(OS.h)
+dnl Check for Linux Extended File Attributes definitions
+AC_CHECK_HEADERS(attr/xattr.h)
+
+dnl from aclocal.m4 (uses AC_TRY_COMPILE)
+AC_HEADER_MAKEDEV
+
+dnl don't use GNU original
+dnl from GNU acspecific.m4 (uses AC_CHECK_HEADER)
+dnl AC_HEADER_MAJOR
+
+AC_CHECK_MINOR_BITS
+AC_CHECK_MINOR_NONCONTIG
+
+AC_HEADER_USG_STDIO
+AC_HEADER_ERRNO_DEF
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_BIGENDIAN
+AC_C_BITFIELDS
+AC_TYPE_SIGNAL
+AC_TYPE_GETGROUPS
+AC_TYPE_LONGLONG
+AC_TYPE_PROTOTYPES
+dnl AC_USER_MALLOC must be past AC_CHECK_FUNCS(strdup)
+AC_DYN_ARRAYS
+
+AC_TYPE_UID_T
+AC_TYPE_SIZE_T
+AC_CHECK_TYPE(ssize_t, int)
+AC_TYPE_PID_T
+AC_TYPE_OFF_T
+AC_TYPE_MODE_T
+AC_TYPE_TIME_T
+AC_CHECK_TYPE(caddr_t, char *)
+AC_CHECK_TYPE(daddr_t, long)
+AC_CHECK_TYPE(dev_t, unsigned short)
+AC_CHECK_TYPE(ino_t, unsigned long)
+AC_CHECK_TYPE(nlink_t, unsigned long)
+AC_TYPE_CLOCK_T
+AC_TYPE_SOCKLEN_T
+
+dnl These types are present on all UNIX systems but should be avoided
+dnl for portability.
+dnl On Apollo/Domain OS we don't have them....
+dnl Better include <utypes.h> and use Uchar, Uint & Ulong
+AC_CHECK_TYPE(u_char, unsigned char)
+AC_CHECK_TYPE(u_short, unsigned short)
+AC_CHECK_TYPE(u_int, unsigned int)
+AC_CHECK_TYPE(u_long, unsigned long)
+
+AC_CHECK_SIZEOF(char)
+AC_CHECK_SIZEOF(short int)
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(long int)
+AC_CHECK_SIZEOF(long long)
+AC_CHECK_SIZEOF(char *)
+
+AC_CHECK_SIZEOF(unsigned char)
+AC_CHECK_SIZEOF(unsigned short int)
+AC_CHECK_SIZEOF(unsigned int)
+AC_CHECK_SIZEOF(unsigned long int)
+AC_CHECK_SIZEOF(unsigned long long)
+AC_CHECK_SIZEOF(unsigned char *)
+
+dnl # AC_TYPE_SIZE_T_		# Defines HAVE_SIZE_T / NO_SIZE_T
+AC_TYPE_CHAR
+AC_TYPE_VA_LIST
+AC_STRUCT_MTGET_TYPE
+AC_STRUCT_MTGET_MODEL
+AC_STRUCT_MTGET_DSREG
+AC_STRUCT_MTGET_DSREG1
+AC_STRUCT_MTGET_DSREG2
+AC_STRUCT_MTGET_GSTAT
+AC_STRUCT_MTGET_ERREG
+AC_STRUCT_MTGET_RESID
+AC_STRUCT_MTGET_FILENO
+AC_STRUCT_MTGET_BLKNO
+AC_STRUCT_MTGET_FLAGS
+AC_STRUCT_MTGET_BF
+AC_STRUCT_RUSAGE
+AC_STRUCT_SI_UTIME
+AC_STRUCT_SOCKADDR_STORAGE
+AC_STRUCT_UNION_SEMUN
+AC_STRUCT_UNION_WAIT
+AC_STRUCT_ST_SPARE1
+AC_STRUCT_ST_ATIMENSEC
+AC_STRUCT_ST_NSEC
+AC_STRUCT_ST__TIM
+AC_STRUCT_ST_ATIMESPEC
+AC_STRUCT_ST_BLKSIZE
+AC_STRUCT_ST_BLOCKS
+AC_STRUCT_ST_RDEV
+AC_STRUCT_ST_FLAGS
+
+dnl Checks for library functions.
+AC_FUNC_WAIT3
+AC_FUNC_MLOCK
+AC_FUNC_MLOCKALL
+AC_FUNC_VA_COPY
+AC_FUNC__VA_COPY
+AC_FUNC_ECVT
+AC_FUNC_FCVT
+AC_FUNC_GCVT
+AC_FUNC_DTOA
+AC_FUNC_DTOA_R
+jsAC_FUNC_MMAP
+AC_MMAP_SIZEP
+AC_FUNC_SMMAP
+AC_FUNC_ALLOCA
+AC_FUNC_QUOTAIOCTL
+AC_FUNC_FCNTL_LOCKF
+AC_FUNC_UNAME
+AC_FUNC_VFORK
+AC_FUNC_SYS_SIGLIST
+AC_FUNC_BSD_GETPGRP
+AC_FUNC_BSD_SETPGRP
+AC_CHECK_FUNCS(brk sbrk strerror nice memmove flock lockf fchdir statvfs quotactl)
+AC_CHECK_FUNCS(dup2)
+AC_CHECK_FUNCS(getcwd shmat semget)
+AC_CHECK_FUNCS(lstat readlink symlink link rename mkfifo mknod)
+AC_CHECK_FUNCS(setreuid setresuid seteuid setuid)
+AC_CHECK_FUNCS(setregid setresgid setegid setgid)
+AC_CHECK_FUNCS(getpgid setpgid)
+AC_CHECK_FUNCS(getpgrp setpgrp)
+dnl			getspwnam() on HP-UX is in libsec.a
+AC_CHECK_FUNCS(getspnam getspwnam)
+AC_CHECK_FUNCS(sync fsync fork wait4 waitid waitpid getrusage getrlimit setrlimit ulimit)
+AC_CHECK_FUNCS(execl execle execlp execv execve execvp)
+AC_CHECK_FUNCS(gethostid gethostname getdomainname getpagesize getdtablesize)
+AC_CHECK_FUNCS(gettimeofday settimeofday time stime)
+AC_CHECK_FUNCS(poll select chown lchown times utime utimes)
+dnl AC_CHECK_FUNCS(ecvt fcvt gcvt)
+AC_CHECK_FUNCS(ecvt_r fcvt_r gcvt_r)
+AC_CHECK_FUNCS(econvert fconvert gconvert)
+AC_CHECK_FUNCS(isinf isnan)
+AC_CHECK_FUNCS(rand drand48)
+AC_CHECK_FUNCS(setpriority DosSetPriority)
+AC_CHECK_FUNCS(DosAllocSharedMem)
+AC_CHECK_FUNCS(seekdir)
+AC_CHECK_FUNCS(strsignal str2sig sig2str)
+AC_CHECK_FUNCS(killpg sigrelse sigprocmask sigsetmask sigset)
+AC_CHECK_FUNCS(nanosleep usleep)
+AC_CHECK_FUNCS(tcgetattr tcsetattr)
+AC_CHECK_FUNCS(putenv setenv snprintf strcasecmp strdup)
+AC_CHECK_FUNCS(valloc)
+AC_CHECK_FUNCS(madvise)
+AC_CHECK_FUNCS(chflags fchflags fflagstostr strtofflags)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+dnl that need results from the AC_CHECK_FUNCS() calls.
+AC_USER_MALLOC
+
+dnl Checks for OS characteristics.
+AC_HARD_SYMLINKS
+AC_LINK_NOFOLLOW
+
+
+dnl Need to check this in default compilation mode to find out
+dnl whether this platform supports both functions by default too.
+dnl We cannot use the standard tests because they would find
+dnl that fseeko()/ftello() are present in small file mode on
+dnl Limnux while there is no prototype for these functions.
+AC_SMALL_FSEEKO
+AC_SMALL_FTELLO
+
+dnl ??? AC_CHECK_LIB(socket, socket, lib_socket="-lsocket")
+dnl
+AC_CHECK_LIB(socket, rcmd, lib_socket="-lsocket")
+ac_save_LIBS="$LIBS"
+LIBS="$LIBS $lib_socket"
+AC_CHECK_LIB(nsl, inet_ntoa, lib_nsl="-lnsl")
+LIBS="$LIBS $lib_nsl"
+AC_CHECK_FUNCS(rcmd socket socketpair)
+AC_CHECK_FUNCS(getservbyname inet_ntoa)
+AC_CHECK_FUNCS(getaddrinfo getnameinfo)
+LIBS="$ac_save_LIBS"
+
+dnl Check for largefile support
+dnl Do this last to make sure that no large file definition
+dnl in confdefs.h will modify our results
+AC_SYS_LARGEFILE
+dnl Warning do not run this test. it interferes with the test
+dnl AC_CHECK_FUNCS(fseeko ftello) from above.
+dnl The test AC_HAVE_LARGEFILES will check whether ftello/fseeko
+dnl are available in Large File mode
+dnl AC_FUNC_FSEEKO
+AC_HAVE_LARGEFILES
+
+AC_DEFINE_UNQUOTED_STRING(HOST_ALIAS,$host_alias)
+AC_DEFINE_UNQUOTED_STRING(HOST_SUB,$host)
+AC_DEFINE_UNQUOTED_STRING(HOST_CPU,$host_cpu)
+AC_DEFINE_UNQUOTED_STRING(HOST_VENDOR,$host_vendor)
+AC_DEFINE_UNQUOTED_STRING(HOST_OS,$host_os)
+
+dnl AC_CHECK_LIB(crypt, crypt, lib_crypt="-lcrypt")
+
+AC_CHECK_LIB(c, crypt, lib_crypt="",
+  [AC_CHECK_LIB(crypt, crypt, lib_crypt="-lcrypt")])
+
+ac_save_LIBS="$LIBS"
+LIBS="$LIBS $lib_crypt"
+AC_CHECK_FUNCS(crypt)
+LIBS="$ac_save_LIBS"
+
+if test $ac_cv_header_camlib_h = yes; then
+  scsi_lib=-lcam
+fi
+
+if test "$ac_cv_header_sys_acl_h" = yes; then
+
+  AC_CHECKING(for Posix Access Control List support)
+  AC_CHECK_LIB(acl, acl_get_file, lib_acl="-lacl")
+  AC_CHECK_LIB(pacl, acl_get_file, lib_acl="-lpacl")
+
+  ac_save_LIBS="$LIBS"
+  LIBS="$LIBS $lib_acl"
+  AC_CHECK_FUNCS(acl_get_file acl_set_file acl_from_text acl_to_text acl_free acl_delete_def_file)
+  LIBS="$ac_save_LIBS"
+
+  AC_CHECKING(for Solaris Access Control List support)
+  AC_CHECK_LIB(sec, acltotext, lib_acl="-lsec")
+  ac_save_LIBS="$LIBS"
+  LIBS="$LIBS $lib_acl"
+  AC_CHECK_FUNCS(acl facl aclfromtext acltotext)
+  LIBS="$ac_save_LIBS"
+
+  AC_CHECKING(for HP-UX Access Control List support)
+  AC_CHECK_FUNCS(getacl fgetacl setacl fsetacl strtoacl acltostr cpacl fcpacl chownacl setaclentry fsetaclentry)
+
+fi
+
+if test "$ac_cv_header_attr_xattr_h" = yes; then
+  AC_CHECKING(for Extended Attribute support)
+  AC_CHECK_LIB(attr, getxattr, lib_attr="-lattr")
+  ac_save_LIBS="$LIBS"
+  LIBS="$LIBS $lib_attr"
+  AC_CHECK_FUNCS(getxattr setxattr listxattr)
+  LIBS="$ac_save_LIBS"
+fi
+
+AC_SUBST(largefile_cc_opt)
+
+AC_SUBST(lib_crypt)
+AC_SUBST(scsi_lib)
+AC_SUBST(lib_acl)
+AC_SUBST(lib_attr)
+
+AC_OUTPUT(rules.cnf)

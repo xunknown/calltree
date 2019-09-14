@@ -1,0 +1,30 @@
+CFILES_STDIO=	cvmod.c dat.c fcons.c fdown.c \
+		ffileread.c ffilewrite.c \
+		fgetline.c file_raise.c \
+		fileopen.c \
+		fileread.c fileseek.c filesize.c filestat.c \
+		filewrite.c flag.c flush.c \
+		fpipe.c \
+		niread.c openfd.c
+
+#
+# Note: getfp.c must be before getav0.c
+# Otherwise getfp.o would be made as dependency of avoffset
+#
+
+CFILES_REST=	astoi.c astoll.c \
+		comerr.c cmpbytes.c \
+		error.c \
+		fconv.c fexec.c fillbytes.c \
+		format.c \
+		getfp.c \
+		getargs.c getav0.c geterrno.c \
+		jsprintf.c jssnprintf.c jssprintf.c \
+		movebytes.c \
+		printf.c \
+		raisecond.c \
+		saveargs.c \
+		seterrno.c \
+		sprintf.c streql.c strcatl.c
+
+CFILES=		$(CFILES_STDIO) $(CFILES_REST)

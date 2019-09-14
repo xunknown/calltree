@@ -1,0 +1,299 @@
+#ident "@(#)rules1.top	1.26 04/01/23 "
+###########################################################################
+# Written 1996 by J. Schilling
+###########################################################################
+#
+# Rules that should be included at top of every Makefile
+# Do not include this file directly; this is the language independent
+# version that may be included in special purpose versions.
+#
+###########################################################################
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; see the file COPYING.  If not, write to the Free Software
+# Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+###########################################################################
+#
+# Global definitions:
+#
+# Define magic unique cookie
+#
+###########################################################################
+_UNIQ= .XxZzy-
+
+###########################################################################
+#
+# Make sure this becomes the default target
+#
+###########################################################################
+all:
+
+###########################################################################
+#
+# Build a macro $(SRCROOTSL) that allows to use file name
+# $(SRCROOTSL)incs/Dcc.$(PARCH)$(-O_ARCH) instead of using
+# the file name $(SRCROOT)/incs/Dcc.$(PARCH)$(-O_ARCH) 
+#
+# This is needed because of a serious bug in SunPRO make. We need to do some
+# tricks in order to make code working that depends on including files where
+# the file name is a macro and the file may be built as a result of a make
+# rule.
+#
+# SunPRO make inconsistsently shortens rules that start with "./"
+# and thus will not find existing rules for a file to be included.
+# We use pattern matching macro expansions to consistently shorten the
+# name if it starts with "./".  This allows to use the same textual
+# string for both the rule and the include statement.
+#
+# Note that Thus bug has been reported to Sun in 1998 but Sun seems not
+# interested to fix the bug.
+#
+###########################################################################
+_SRCROOTSL=	$(SRCROOT)/
+SRCROOTSL= 	$(_SRCROOTSL:./%=%)
+
+###########################################################################
+#
+# Global handler for failed inludes
+#
+###########################################################################
+.INCLUDE_FAILED:
+	@echo " ==> AUTOMAKING \"$^\""; sh $(SRCROOTSL)conf/makeinc $^
+
+###########################################################################
+#
+# Legacy support for old smake programs ...
+#
+###########################################################################
+.INCLUDEFAILED:
+	@echo " ==> AUTOMAKING \"$^\""; sh $(SRCROOTSL)conf/makeinc $^
+
+###########################################################################
+#
+# Some global constants or pre-definitions
+#
+###########################################################################
+_LCONFIG=	$(_UNIQ)$(LCONFIG)
+__LCONFIG=	$(_LCONFIG:$(_UNIQ)=ldummy.cnf)
+LOCAL_CNF=	$(__LCONFIG:$(_UNIQ)%=%)
+###########################################################################
+
+###########################################################################
+#
+# Standard (automatic) makeprog identification
+#
+# Each make program should define a macro: MAKE_NAME for identification.
+# MAKE_NAME in this case is a built in macro like MAKE or MAKEFLAGS.
+# Currently only 'smake' implements this feature.
+#
+###########################################################################
+_MAKEPROG=	$(_UNIQ)$(MAKE_NAME)
+__MAKEPROG=	$(_MAKEPROG:$(_UNIQ)=$(MAKEPROG))
+_XMAKEPROG=	$(__MAKEPROG:$(_UNIQ)%=%)
+
+# gmake defines a macro MAKE_COMMAND. If neither MAKE_NAME is defined by 
+# the make program, not MAKEPROG is set, try this to recognize gmake.
+#
+_MAKE_COMMAND=	$(MAKE_COMMAND:%make=gmake)
+
+__XMAKEPROG=	$(_UNIQ)$(_XMAKEPROG)
+___XMAKEPROG=	$(__XMAKEPROG:$(_UNIQ)=$(_MAKE_COMMAND))
+XMAKEPROG=	$(___XMAKEPROG:$(_UNIQ)%=%)
+
+include		$(SRCROOT)/$(RULESDIR)/mk-$(XMAKEPROG).id
+
+###########################################################################
+#
+# Standard (automatic) os identification
+#
+###########################################################################
+include		$(SRCROOT)/$(RULESDIR)/os-$(OSNAME).id
+
+###########################################################################
+#
+# Global os definitions
+#
+###########################################################################
+include		$(SRCROOT)/$(RULESDIR)/os-$(O_ARCH).def
+
+###########################################################################
+#
+# Some global project definitions that may be overwritten in 'Defaults'
+#
+###########################################################################
+CWARNOPTS=	$(CWOPTS)
+
+###########################################################################
+#
+# Global project definitions
+#
+###########################################################################
+DEF_ROOT=	$(SRCROOT)
+DEF_DIR=	DEFAULTS
+
+_DEFAULTSROOT=	$(_UNIQ)$(DEFAULTSROOT)
+__DEFAULTSROOT=	$(_DEFAULTSROOT:$(_UNIQ)=$(DEF_ROOT))
+DEFLTSROOT=	$(__DEFAULTSROOT:$(_UNIQ)%=%)
+
+_DEFAULTSDIR=	$(_UNIQ)$(DEFAULTSDIR)
+__DEFAULTSDIR=	$(_DEFAULTSDIR:$(_UNIQ)=$(DEF_DIR))
+DEFLTSDIR=	$(__DEFAULTSDIR:$(_UNIQ)%=%)
+
+include		$(DEFLTSROOT)/$(DEFLTSDIR)/Defaults
+
+###########################################################################
+#
+# Get curent directory name
+#
+###########################################################################
+_DIRNAME=	$(_UNIQ)$(DIRNAME)
+__DIRNAME=	$(_DIRNAME:$(_UNIQ)=...)
+CURDIR=		$(__DIRNAME:$(_UNIQ)%=%)
+
+###########################################################################
+#
+# Standard UNIX compiler name for use as architecture name.
+#
+# (this is not necessarily the name the compiler is called by)
+# This is now defined in $(DEFAULTSROOT)/Defaults
+# If not ... use 'cc'
+#
+###########################################################################
+DEFCCOM_DEF=	cc
+
+_DEFCCOM=	$(_UNIQ)$(DEFCCOM)
+__DEFCCOM=	$(_DEFCCOM:$(_UNIQ)=$(DEFCCOM_DEF))
+CCOM_DEF=	$(__DEFCCOM:$(_UNIQ)%=%)
+
+_CCOM=		$(_UNIQ)$(CCOM)
+__CCOM=		$(_CCOM:$(_UNIQ)=$(CCOM_DEF))
+C_ARCH=		$(__CCOM:$(_UNIQ)%=%)
+
+###########################################################################
+#
+# Standard default include directories
+#
+###########################################################################
+DEFINCDIRS_DEF=	$(SRCROOT)/include
+
+_INCDIRS=	$(_UNIQ)$(DEFINCDIRS)
+__INCDIRS=	$(_INCDIRS:$(_UNIQ)=$(DEFINCDIRS_DEF))
+INCDIRS=	$(__INCDIRS:$(_UNIQ)%=%)
+
+###########################################################################
+#
+# Prepare come macros needed to build $(ARCHDIR)
+#
+# Build macros for:
+#	- processor type
+#	- operating system
+#	- compiler identification
+#
+###########################################################################
+KARCH_DEF=	$(K_ARCH)
+MARCH_DEF=	$(M_ARCH)
+PARCH_DEF=	$(P_ARCH)
+
+KARCH=		K_ARCH
+
+_MARCH=		$(_UNIQ)$(ARCH)
+__MARCH=	$(_MARCH:$(_UNIQ)=$(MARCH_DEF))
+MARCH=		$(__MARCH:$(_UNIQ)%=%)
+
+_PARCH=		$(_UNIQ)$(ARCH)
+__PARCH=	$(_PARCH:$(_UNIQ)=$(PARCH_DEF))
+PARCH=		$(__PARCH:$(_UNIQ)%=%)
+
+###########################################################################
+#
+# Now include the file $(SRCROOT)/incs/Dcc.$(PARCH)$(-O_ARCH) 
+# which is needed if the C-complier from the manual default configutration 
+# is not present on the current system. We try to use GCC as fallback
+# in this case.
+#
+# Due to a serious bug in SunPRO make we need to do some tricks to make
+# the following code working.
+#
+# See notes about $(SRCROOT)/ vs. $(SRCROOTSL) above.
+#
+###########################################################################
+_DCC=	$(SRCROOTSL)incs/Dcc.$(PARCH)$(-O_ARCH)
+
+$(_DCC):
+	sh $(SRCROOTSL)conf/cc-config.sh $(C_ARCH) $@
+
+include		$(_DCC)
+
+###########################################################################
+#
+# Build $(ARCHDIR) which occupies a central role in the whole
+# make file system. ARCHDIR is used as a sub directory name to keep
+# platform dependent files on different places.
+#
+# It is built from:
+#	- processor type
+#	- operating system
+#	- compiler identification
+#
+# A possible name could be:
+#	mc68020-sunos4-cc
+#
+###########################################################################
+#OARCH=		$(MARCH)$(-O_ARCH)-$(C_ARCH)
+OARCH=		$(PARCH)$(-O_ARCH)-$(C_ARCH)
+XARCH=		$(K_ARCH)$(-O_ARCH)-$(C_ARCH)
+.print:
+	echo $(XP_ARCH) $(P_ARCH) $(OARCH) $(XARCH)
+
+###########################################################################
+#
+# All generated files are placed directly into this subdirectory.
+# This includes e.g. yacc output (.c & .h files).
+# SUBARCH is used if a object is conditional compiled in multiple ways.
+#
+###########################################################################
+OARCHDIR=	OBJ/$(OARCH)
+ARCHDIR=	OBJ/$(OARCH)$(SUBARCHDIR)$(SUBARCH)
+
+###########################################################################
+#
+# See notes about $(SRCROOT)/ vs. $(SRCROOTSL) above.
+#
+###########################################################################
+OLIBSDIR=	$(SRCROOTSL)libs/$(OARCH)
+OINCSDIR=	$(SRCROOTSL)incs/$(OARCH)
+
+###########################################################################
+# Location for targets:
+#
+# - all						: see appropriate rules
+# - lint					: rules.lnt
+# - clean, clobber, distclean, relink, rmtarget	: rules.clr
+# - install, ibins				: rules.ins
+# - depend, rmdep				: rules.dep
+# - config					: rules.cnf
+# - tags, TAGS					: rules.tag
+# - .help					: rules.hlp
+# - tinfo					: rules.dir/rules.rdi
+#
+# We do not put '.help' and 'tinfo' into 'ALLTARGETS' because:
+#
+#	.help	is not recursive
+#	tinfo	is handeled separately in rules1.dir
+#
+# If we would add .help and tinfo, we would get multiple defined target
+# messages.
+###########################################################################
+ALLTARGETS=	all lint clean clobber distclean install ibins depend rmdep \
+		config TAGS tags rmtarget relink
+
+.PHONY:	$(ALLTARGETS) .help tinfo
