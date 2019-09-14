@@ -1,4 +1,4 @@
-/* @(#)fgetline.c	1.6 03/06/15 Copyright 1986, 1996-2003 J. Schilling */
+/* @(#)fgetline_calltree.c	1.6 03/06/15 Copyright 1986, 1996-2003 J. Schilling */
 /*
  *	Copyright (c) 1986, 1996-2003 J. Schilling
  */
@@ -26,7 +26,7 @@
  */
 
 EXPORT int
-fgetline(f, buf, len)
+fgetline_calltree(f, buf, len)
 	register	FILE	*f;
 			char	*buf;
 	register	int	len;
@@ -64,9 +64,9 @@ fgetline(f, buf, len)
 }
 
 EXPORT int
-getline(buf, len)
+getline_calltree(buf, len)
 	char	*buf;
 	int	len;
 {
-	return (fgetline(stdin, buf, len));
+	return (fgetline_calltree(stdin, buf, len));
 }

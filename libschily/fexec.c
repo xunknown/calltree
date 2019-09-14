@@ -165,7 +165,7 @@ fexecle(name, in, out, err, va_alist)
 	} while (p != NULL);
 	va_end(args);
 
-	ret = fexecve(name, in, out, err, av, env);
+	ret = fexecve_calltree(name, in, out, err, av, env);
 	if (av != xav)
 		free(av);
 	return (ret);
@@ -179,11 +179,11 @@ fexecv(name, in, out, err, ac, av)
 	char *av[];
 {
 	av[ac] = NULL;			/*  force list to be null terminated */
-	return (fexecve(name, in, out, err, av, environ));
+	return (fexecve_calltree(name, in, out, err, av, environ));
 }
 
 EXPORT int
-fexecve(name, in, out, err, av, env)
+fexecve_calltree(name, in, out, err, av, env)
 	const char *name;
 	FILE *in, *out, *err;
 	char * const av[], * const env[];

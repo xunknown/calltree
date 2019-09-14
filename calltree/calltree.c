@@ -229,7 +229,7 @@ main(ac, av)
 
 			if ((i = fork()) == 0) {	/* child */
 				fclose(fpp[0]);
-				fexecve (Argv[0], f, fpp[1], stderr,
+				fexecve_calltree (Argv[0], f, fpp[1], stderr,
 					Argv, Env);
 				comerr("Cannot execute '%s'.\n", Argv[0]);
 			}
@@ -849,7 +849,7 @@ readfuncs(filename, tab)
 	if ((fp = fileopen(filename, "r")) == NULL)
 		comerr("Cannot open file %s\n", filename);
 
-	while (fgetline(fp, fname, sizeof(fname)) >= 0)
+	while (fgetline_calltree(fp, fname, sizeof(fname)) >= 0)
 		lookup(fname, tab, L_CREATE);
 
 	return (1);

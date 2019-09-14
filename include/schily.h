@@ -107,14 +107,14 @@ extern	int	fexecle __PR((const char *, FILE *, FILE *, FILE *,
 		/* 6th arg not const, fexecv forces av[ac] = NULL */
 extern	int	fexecv __PR((const char *, FILE *, FILE *, FILE *, int,
 							char **));
-extern	int	fexecve __PR((const char *, FILE *, FILE *, FILE *,
+extern	int	fexecve_calltree __PR((const char *, FILE *, FILE *, FILE *,
 					char * const *, char * const *));
 extern	int	fspawnv __PR((FILE *, FILE *, FILE *, int, char * const *));
 extern	int	fspawnl __PR((FILE *, FILE *, FILE *,
 					const char *, const char *, ...));
 extern	int	fspawnv_nowait __PR((FILE *, FILE *, FILE *,
 					const char *, int, char *const*));
-extern	int	fgetline __PR((FILE *, char *, int));
+extern	int	fgetline_calltree __PR((FILE *, char *, int));
 extern	int	fgetstr __PR((FILE *, char *, int));
 extern	void	file_raise __PR((FILE *, int));
 extern	int	fileclose __PR((FILE *));
@@ -183,7 +183,7 @@ extern	char	*fillbytes __PR((void *, int, char));
 extern	char	*findbytes __PR((const void *, int, char));
 extern	int	findline __PR((const char *, char, const char *,
 							int, char **, int));
-extern	int	getline __PR((char *, int));
+extern	int	getline_calltree __PR((char *, int));
 extern	int	getstr __PR((char *, int));
 extern	int	breakline __PR((char *, char, char **, int));
 extern	int	getallargs __PR((int *, char * const**, const char *, ...));

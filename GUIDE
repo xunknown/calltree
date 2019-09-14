@@ -1,0 +1,65 @@
+calltree的安装与使用
+2017年11月06日 16:31:00 lsr_fighting 阅读数 1259
+版权声明：本文为博主原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明。
+本文链接：https://blog.csdn.net/lsr_fighting/article/details/78458679
+calltree是一个用于帮助阅读源代码的工具，其可以生成函数之间的关系调用图。
+
+安装：
+
+下载地址：http://download.chinaunix.net/download.php?id=2245&ResourceID=1172
+
+解压后直接make即可，在make过程中会遇到错误，解决的命令
+
+1、cp RULES/i686-linux-cc.rul RULES/x86_64-linux-cc.rul
+
+2、
+
+find . -name "*.[c|h]" |xargs sed -i -e "s/fexecve/fexecve_calltree/"
+find . -name "*.[c|h]" |xargs sed -i -e "s/getline/getline_calltree/"
+find . -name "*.[c|h]" -exec grep getline -nH {} \;
+
+find . -name "*.[c|h]" -exec grep fexecve -nH {} \;
+3、
+安装好后，软链接到/usr/bin目录下  ln -s /home/XXX/calltree/OBJ/x86_64-linux-cc/calltree /usr/bin/calltree
+apt-get install graphviz先安装
+
+使用：
+-g输出函数所在文件的目录
+
+-m参数只用于分析main函数中的函数调用关系。
+
+-p参数是默认的。它表示要使用C语言预处理程序分析代码。缺点是它会产生很多我们不关心的消息。
+
+-np和-p是相反的。它表示不要使用C语言预处理程序分析代码。如果指定它，可能会导致分析过程出错。因为像开源项目，有几个不需要预处理处理下呢？
+
+-xvcg参数表示导出一个可以使用VCG软件处理的格式的文件。
+-dot参数表示导出一个dot格式文件，可以供graphviz处理的。
+
+list可以让我们指定仅仅需要分析的函数里的函数调用。
+
+还有一个重要的选项是listfunction ，缩写是lf，用来只打印某个函数中的调用，用法是： lf=your_function
+
+
+
+使用一：
+
+#calltree -np -b  list=start_kernel  depth=3 `find ./init/ ./kernel/ -name "*.c"` > maps
+
+#vi maps
+
+
+使用二：
+calltree -np -b -dot list=start_kernel ./init/*.c > ~/start_kernel.dot
+dot -T png start_kernel.dot -o ./testhaha.png
+
+使用三：
+calltree -dot list="ev_run" *.c > ev_run.dot
+ 	
+dot -Tgif ev_run.dot -o ev_run.gif
+
+
+参考链接：
+https://www.2cto.com/kf/201707/660151.html
+
+http://www.cnblogs.com/mylinux/p/6145625.html
+
